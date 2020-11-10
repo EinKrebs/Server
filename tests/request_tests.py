@@ -1,9 +1,7 @@
 import unittest
 
-from ui.server import Server
 from request.http_request import HttpRequest
 from request.request_method import Method
-from responce.http_responce import HttpResponse
 
 
 class HttpRequestTests(unittest.TestCase):

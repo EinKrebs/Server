@@ -1,6 +1,6 @@
 import asyncio
 
-from ui.server import Server
+from server import Server
 
 
 async def main():

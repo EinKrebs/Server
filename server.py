@@ -11,8 +11,8 @@ class Server:
 
     def text(self, addr):
         def decor(func):
-            def result(request) -> HttpResponse:
-                answer_data = func(request)
+            def result() -> HttpResponse:
+                answer_data = func()
                 return HttpResponse(Code.OK, answer_data)
             self.handlers[addr] = result
             return result
