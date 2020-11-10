@@ -1,9 +1,8 @@
+from __future__ import annotations
 import typing
-import sys
 
+from infrastructure.iterator_extensions import (to_dictionary)
 from .request_method import Method
-from infrastructure.iterator_extensions import (to_dictionary,
-                                                dictionary_to_string)
 
 
 class HttpRequest:
@@ -22,31 +21,17 @@ class HttpRequest:
 
     @staticmethod
     def get_invalid():
-        return HttpRequest(Method.GET, '', {}, {}, {}, False)
+        return HttpRequest(Method.GET, '', valid=False)
 
     @staticmethod
-    def from_bytes(data):
+    def from_bytes(data) -> HttpRequest:
         if data[-4:] != b'\r\n\r\n':
             return HttpRequest.get_invalid()
         text = data.decode().split('\r\n')[:-2]
-        a = text[0].split()
-        if len(a) != 3 or (a[2] != 'HTTP/1.0' and a[2] != 'HTTP/1.1'):
+        header_parsing = HttpRequest.parse_header(text[0])
+        if header_parsing is None:
             return HttpRequest.get_invalid()
-        try:
-            method = Method(a[0])
-        except ValueError as e:
-            print('Unknown request method', e, file=sys.stderr)
-            return HttpRequest.get_invalid()
-        version = a[2]
-        addr, params_str = (a[1].split('?')
-                            if a[1].find('?') != -1
-                            else (a[1], None))
-        if params_str is not None:
-            # noinspection PyUnresolvedReferences
-            params = to_dictionary(map(lambda pair: tuple(pair.split('=')),
-                                       params_str.split('&')))
-        else:
-            params = {}
+        method, addr, params, version = header_parsing
         headers = to_dictionary(map(lambda header: tuple(header.split(': ')),
                                     text[1:]))
         if 'Cookie' in headers:
@@ -57,10 +42,32 @@ class HttpRequest:
             cookies = {}
         if 'Host' not in headers:
             if version == 'HTTP/1.0':
-                # TODO: test this
                 host, address = addr[:addr.find('/')], addr[addr.find('/'):]
                 headers['Host'] = host
                 addr = address
             else:
                 return HttpRequest.get_invalid()
         return HttpRequest(method, addr, params, headers, cookies)
+
+    @staticmethod
+    def parse_header(header) \
+            -> typing.Tuple[Method, str, typing.Dict[str, str], str] or None:
+        header = header.split()
+        if len(header) != 3 or (header[2] != 'HTTP/1.0'
+                                and header[2] != 'HTTP/1.1'):
+            return None
+        try:
+            method = Method(header[0])
+        except ValueError:
+            return None
+        version = header[2]
+        addr, params_str = (header[1].split('?')
+                            if header[1].find('?') != -1
+                            else (header[1], None))
+        if params_str is not None:
+            # noinspection PyUnresolvedReferences
+            params = to_dictionary(map(lambda pair: tuple(pair.split('=')),
+                                       params_str.split('&')))
+        else:
+            params = {}
+        return method, addr, params, version
