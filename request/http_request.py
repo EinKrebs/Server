@@ -64,14 +64,3 @@ class HttpRequest:
             else:
                 return HttpRequest.get_invalid()
         return HttpRequest(method, addr, params, headers, cookies)
-
-    def to_bytes(self):  # зачем мне это?
-        res = str(self.method)
-        res += f' {self.address}'
-        if len(self.params) != 0:
-            res += f'?{dictionary_to_string(self.params, "&", "=")}'
-        res += ' HTTP/1.1\r\n'
-        res += dictionary_to_string(self.headers, ': ', '\r\n')
-        res += f'Cookie: {dictionary_to_string(self.cookies, "=", "; ")}\r\n'
-        res += '\r\n'
-        return res
