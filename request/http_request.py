@@ -35,8 +35,9 @@ class HttpRequest:
         headers = to_dictionary(map(lambda header: tuple(header.split(': ')),
                                     text[1:]))
         if 'Cookie' in headers:
-            cookies = to_dictionary(map(lambda cookie: tuple(cookie.split('=')),
-                                        headers['Cookie'].split('; ')))
+            cookies = to_dictionary(map(
+                lambda cookie: tuple(cookie.split('=')),
+                headers['Cookie'].split('; ')))
             del headers['Cookie']
         else:
             cookies = {}

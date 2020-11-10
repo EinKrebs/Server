@@ -80,4 +80,4 @@ class HttpRequestTests(unittest.TestCase):
         req = HttpRequest.from_bytes(data.encode())
         self.assertTrue(req.valid)
         self.assertDictEqual(req.cookies, {'a': '1', 'b': 'cookie_b',
-                                          'c': 'lorem ipsum'})
+                                           'c': 'lorem ipsum'})
