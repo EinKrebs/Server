@@ -1,6 +1,0 @@
-1. handle requests truncation - check
-2. handle incorrect requests - check
-3. handle "Connection" header
-4. other headers
-5. HTTP/1.0 & HTTP/1.1 - check
-6. Разбить бы HttpRequest.from_bytes() на методы

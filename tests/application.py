@@ -1,5 +1,4 @@
 import asyncio
-import socket
 
 from ui.server import Server
 

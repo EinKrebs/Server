@@ -11,11 +11,11 @@ class Server:
 
     def text(self, addr):
         def decor(func):
-            def result(request):
+            def result(request) -> HttpResponse:
                 answer_data = func(request)
                 return HttpResponse(Code.OK, answer_data)
+            self.handlers[addr] = result
             return result
-        self.handlers[addr] = decor
         return decor
 
     def add_route(self, addr, handler):
@@ -28,4 +28,6 @@ class Server:
         req = HttpRequest.from_bytes(data)
         if req.address not in self.handlers:
             return HttpResponse(Code.PAGE_NOT_FOUND)
-        return self.handlers[req.address](req)
+        handler = self.handlers[req.address]
+        res = handler(req)
+        return res
