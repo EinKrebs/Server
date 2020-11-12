@@ -6,4 +6,5 @@ from tests.text_tests import TextTests
 from tests.infracstructure_tests import IteratorExtensionsTests
 
 
-unittest.main()
+if __name__ == '__main__':
+    unittest.main()
