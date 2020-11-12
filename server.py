@@ -1,7 +1,7 @@
 from infrastructure.server_functions import ServerFunctions
 from request.http_request import HttpRequest
-from responce.http_responce import HttpResponse
-from responce.response_code import Code
+from response.http_response import HttpResponse
+from response.response_code import Code
 
 
 class Server:
