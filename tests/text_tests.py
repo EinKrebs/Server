@@ -17,3 +17,4 @@ class TextTests(unittest.TestCase):
         response = test_func(HttpRequest(Method.GET, 'page'))
         self.assertIsInstance(response, HttpResponse)
         self.assertEqual(response.text_data, b'test')
+        self.assertIn(test_func, server.handlers['page'])

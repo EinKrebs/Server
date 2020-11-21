@@ -23,10 +23,13 @@ class Server:
         self.handlers[addr] = handler
 
     async def start(self):
-        async with await asyncio.start_server(self.handle_connection, '127.0.0.1', self.port) as server:
+        async with await asyncio.start_server(self.handle_connection,
+                                              '127.0.0.1',
+                                              self.port) as server:
             await server.serve_forever()
 
-    async def handle_connection(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter):
+    async def handle_connection(self, reader: asyncio.StreamReader,
+                                writer: asyncio.StreamWriter):
         while True:
             try:
                 data = await reader.readuntil(b'\r\n\r\n')
