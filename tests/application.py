@@ -10,7 +10,7 @@ async def main():
     def a(request):
         return 'Hello world'
 
-    asyncio.create_task(server.start())
+    await server.start()
 
 
 if __name__ == '__main__':

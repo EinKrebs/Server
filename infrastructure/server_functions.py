@@ -30,7 +30,7 @@ class ServerFunctions:
 
     @staticmethod
     async def handle(sock: socket.socket, server, data: bytes):
-        ans = await server.handle(data)
+        ans = await server.handle_request(data)
         try:
             sock.sendall(ans.to_bytes())
         except BrokenPipeError:
