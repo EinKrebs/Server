@@ -1,9 +1,8 @@
-from infrastructure.server_functions import ServerFunctions
+import asyncio
+
 from request.http_request import HttpRequest
 from response.http_response import HttpResponse
 from response.response_code import Code
-
-import asyncio
 
 
 class Server:
