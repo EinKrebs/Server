@@ -4,6 +4,8 @@ from request.http_request import HttpRequest
 from response.http_response import HttpResponse
 from response.response_code import Code
 
+import functions
+
 
 class Server:
     def __init__(self, port: int = 12345):
@@ -11,13 +13,7 @@ class Server:
         self.port = port
 
     def text(self, addr):
-        def decor(func):
-            def result(request: HttpRequest) -> HttpResponse:
-                answer_data = func(request)
-                return HttpResponse(Code.OK, answer_data)
-            self.handlers[addr] = result
-            return result
-        return decor
+        return functions.text.text(self, addr)
 
     def add_route(self, addr, handler):
         self.handlers[addr] = handler
