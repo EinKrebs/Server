@@ -2,7 +2,7 @@ from __future__ import annotations
 import typing
 
 from infrastructure.iterator_extensions import (to_dictionary)
-from .request_method import Method
+from request.request_method import Method
 
 
 class HttpRequest:
@@ -41,13 +41,11 @@ class HttpRequest:
             del headers['Cookie']
         else:
             cookies = {}
-        if 'Host' not in headers:
+        if 'Connection' not in headers:
             if version == 'HTTP/1.0':
-                host, address = addr[:addr.find('/')], addr[addr.find('/'):]
-                headers['Host'] = host
-                addr = address
+                headers['Connection'] = 'close'
             else:
-                return HttpRequest.get_invalid()
+                headers['Connection'] = 'keep-alive'
         return HttpRequest(method, addr, params, headers, cookies)
 
     @staticmethod
