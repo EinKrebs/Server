@@ -11,6 +11,10 @@ async def main():
     def filename(request):
         return f'{os.getcwd()}/example'
 
+    @server.directory_listing('/files')
+    def directory(request):
+        return '/home/krebs/PythonProjects/Server'
+
     await server.start()
 
 

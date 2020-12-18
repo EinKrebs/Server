@@ -1,9 +1,13 @@
 import asyncio
+import os
 from typing import Tuple
 
 from request.http_request import HttpRequest
 from response.http_response import HttpResponse
 from response.response_code import Code
+
+import server_functions
+import html_functions
 
 
 class Server:
@@ -13,29 +17,15 @@ class Server:
         self.port = port
 
     def text(self, addr, host=None):
-        def decor(func):
-            def result(request: HttpRequest) -> HttpResponse:
-                answer_data = func(request)
-                return HttpResponse(Code.OK, answer_data)
-
-            self.bind(host, addr, result)
-            return result
-
-        return decor
+        return server_functions.text.text(self, addr, host)
 
     def file(self, addr, host=None):
-        def decor(func):
-            def handler(request) -> HttpResponse:
-                filename = func(request)
-                return HttpResponse(Code.OK, file=filename)
+        return server_functions.file.file(self, addr, host)
 
-            self.bind(host, addr, handler)
-            return handler
-
-        return decor
-
-    def add_route(self, addr, handler):
-        self.handlers[addr] = handler
+    def directory_listing(self, addr, host=None):
+        return server_functions.directory_listing.directory_listing(self,
+                                                                    addr,
+                                                                    host)
 
     async def start(self):
         async with await asyncio.start_server(self.handle_connection,

@@ -1,5 +1,3 @@
-from typing import Iterable
-
 from .response_code import Code
 
 
