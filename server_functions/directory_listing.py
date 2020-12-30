@@ -5,7 +5,11 @@ import html_functions
 import os
 
 
-def directory_listing(server, addr, host=None):
+def default_view(file: str):
+    return file
+
+
+def directory_listing(server, addr, host=None, view=default_view):
     def decor(func):
         def handler(request: HttpRequest) -> HttpResponse:
             directory_name = func(request)
@@ -13,7 +17,7 @@ def directory_listing(server, addr, host=None):
                 directory_name[directory_name.rfind('/') + 1:],
                 html_functions.block(
                     'pre',
-                    '\n'.join(file for file in os.listdir(directory_name))
+                    '\n'.join(view(file) for file in os.listdir(directory_name))
                 )
             )
             return HttpResponse(Code.OK, text_data=text)

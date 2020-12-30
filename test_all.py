@@ -10,6 +10,8 @@ from tests.text_tests import TextTests
 from tests.infracstructure_tests import IteratorExtensionsTests
 # noinspection PyUnresolvedReferences
 from tests.server_tests import ServerTests
+# noinspection PyUnresolvedReferences
+from tests.form_data_tests import FormDataTests
 
 
 if __name__ == '__main__':

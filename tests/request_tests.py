@@ -30,10 +30,6 @@ class HttpRequestTests(unittest.TestCase):
         data = 'GET / HTTP/1.1\r\nHost: abc\r\n'
         self.assert_invalid(data.encode())
 
-    def test_no_host(self):
-        data = 'GET / HTTP/1.1\r\n\r\n'
-        self.assert_invalid(data.encode())
-
     def test_method(self):
         data = 'GET 127.0.0.1/ HTTP/1.0\r\n\r\n'
         req = HttpRequest.from_bytes(data.encode())
@@ -70,7 +66,8 @@ class HttpRequestTests(unittest.TestCase):
         req = HttpRequest.from_bytes(data.encode())
         self.assertTrue(req.valid)
         self.assertDictEqual(req.headers, {'a': '1', 'b': 'header_b',
-                                           'c': 'lorem ipsum', 'Host': 'abc'})
+                                           'c': 'lorem ipsum', 'Host': 'abc',
+                                           'Connection': 'keep-alive'})
 
     def test_cookies(self):
         data = 'GET /addr HTTP/1.1\r\n' \
@@ -81,3 +78,10 @@ class HttpRequestTests(unittest.TestCase):
         self.assertTrue(req.valid)
         self.assertDictEqual(req.cookies, {'a': '1', 'b': 'cookie_b',
                                            'c': 'lorem ipsum'})
+
+    def test_post_simple(self):
+        data = b'POST / HTTP/1.1\r\n' \
+               b'Host: server\r\n' \
+               b'\r\n'
+        req = HttpRequest.from_bytes(data)
+        self.assertEqual(req.method, Method.POST)

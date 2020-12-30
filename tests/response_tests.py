@@ -12,7 +12,7 @@ def test_text_data_params(data):
             'Content-Type: text/html; charset=UTF-8\r\n'
             f'Content-Length: {len(data.encode())}\r\n'
             '\r\n'
-            f'{data}')
+            f'{data}\r\n')
 
 
 class HttpResponseTests(unittest.TestCase):
