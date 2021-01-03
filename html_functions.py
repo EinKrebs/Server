@@ -1,5 +1,6 @@
 from enum import Enum
 from typing import List
+from PIL import Image
 
 
 def base_structure(title, content):
@@ -58,3 +59,19 @@ def form(title: str, action: str, *fields: HtmlFormField):
             f' {HtmlFormField.to_html(field)}'
             for field in fields)
         + '\n</form>')
+
+
+def href(addr, name):
+    return f'<a href="{addr}">{name}</a>'
+
+
+def image(path, alt_text, size=None):
+    if size is None:
+        img = Image.open(path)
+        size = img.size
+    if len(size) != 2:
+        raise ValueError("Incorrect image size")
+    width = size[0]
+    height = size[1]
+    return f'<img src="{path}" alt="{alt_text}" width="{width}" ' \
+           f'height = "{height}">'

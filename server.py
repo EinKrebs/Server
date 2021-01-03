@@ -56,14 +56,16 @@ class Server:
         await writer.wait_closed()
 
     async def handle_request(self,
-                       data: bytes,
-                       reader: asyncio.StreamReader) -> \
+                             data: bytes,
+                             reader: asyncio.StreamReader) -> \
             Tuple[HttpResponse, bool]:
         req = HttpRequest.from_bytes(data)
         if 'Content-Length' in req.headers and req.form is None:
             length = int(req.headers['Content-Length'])
-            data += await reader.read(length)
-            print(data[-length:])
+            file_data = await reader.read(length)
+            while len(file_data) < length:
+                file_data += await reader.read(length - len(file_data))
+            data += file_data
             req = HttpRequest.from_bytes(data)
         if req.address not in self.handlers:
             return HttpResponse(Code.PAGE_NOT_FOUND), False

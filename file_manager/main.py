@@ -7,11 +7,11 @@ from server import Server
 from request.http_request import HttpRequest
 from request.request_method import Method
 from response.http_response import HttpResponse
-from html_functions import HtmlFormField as field, HtmlFormFieldType, form
+from html_functions import HtmlFormField as field, HtmlFormFieldType, form, \
+    image, href
 
 
 def file_from_dictionary(dictionary: dict, boundary: bytes, path: str):
-    print(path, os.getcwd())
     with open(path, 'wb') as f:
         f.write(b'boundary=' + boundary + b'\n')
         for key, value in dictionary.items():
@@ -28,7 +28,10 @@ def view_func(addr: str):
         except ValueError:
             return ''
         file_name = dictionary["file_name"]
-        result = f'<a href="{addr}/{file_name}">{file_name}</a>:<br>'
+        size = tuple(dictionary['size'].split('x'))
+        result = href(f'{addr}/{file_name}', file_name) + ':<br>'
+        result += image('/file_data/' + file_name,
+                        file_name, size) + '<br>'
         for key, value in dictionary.items():
             if key == 'file' or key == 'file_name':
                 continue
@@ -64,11 +67,9 @@ async def main():
         os.mkdir(os.getcwd() + '/files')
     if 'file_data' not in os.listdir(os.getcwd() + '/files'):
         os.mkdir(os.getcwd() + '/files/file_data')
-    print(os.listdir(os.getcwd() + '/files/file_data'))
     for file in os.listdir(os.getcwd() + '/files/file_data'):
         @server.file('/file_data/' + file)
         def func(request):
-            print(os.getcwd(), file)
             return os.getcwd() + '/files/file_data/' + file
 
     @server.directory_listing(
@@ -129,7 +130,7 @@ async def main():
 
         return HttpResponse(
             text_data=form('Upload an image',
-                           '/upload',
+                           '/',
                            field('name', HtmlFormFieldType.Text),
                            field('photo', HtmlFormFieldType.File),
                            field('description', HtmlFormFieldType.Text),
