@@ -10,7 +10,7 @@ class HttpResponse:
 
     def to_bytes(self):
         t = self.code.value
-        result = (f'HTTP/1.1 {t[0]} {t[1]}\r\n' 
+        result = (f'HTTP/1.1 {t[0]} {t[1]}\r\n'
                   f'Server: python\r\n').encode()
         if self.text_data:
             result += (f'Content-Type: text/html; charset=UTF-8\r\n'

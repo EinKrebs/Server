@@ -17,4 +17,3 @@ def custom_handler(server, addr, host=None):
         return handler
 
     return decor
-
