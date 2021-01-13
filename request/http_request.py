@@ -98,24 +98,3 @@ class HttpRequest:
             raise ValueError('Incorrect form data')
         blocks = form_data[:-len(boundary) - 4].split(boundary + b'\r\n')
         return Form(*list(map(FormData.from_bytes, blocks[1:])))
-
-
-if __name__ == '__main__':
-    req = HttpRequest.from_bytes(
-        b'POST / HTTP/1.1\r\n'
-        b'Host: myserver\r\n'
-        b'Content-Type: multipart/form-data; boundary=----aaaaa\r\n'
-        b'Content-Length: 1\r\n'
-        b'\r\n'
-        b'------aaaaa\r\n'
-        b'Content-Disposition: form-data; name="name"\r\n'
-        b'\r\n'
-        b'a\r\n'
-        b'------aaaaa--\r\n')
-    print(req.method,
-          req.address,
-          req.params,
-          req.headers,
-          req.cookies,
-          req.form,
-          req.valid)
