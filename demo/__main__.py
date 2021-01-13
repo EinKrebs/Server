@@ -7,8 +7,9 @@ from server import Server
 from request.http_request import HttpRequest
 from request.request_method import Method
 from response.http_response import HttpResponse
-from html_functions import HtmlFormField as field, HtmlFormFieldType, form, \
-    image, href
+import html_functions
+from html_functions import HtmlFormField as field,\
+    HtmlFormFieldType as field_type
 
 
 def file_from_dictionary(dictionary: dict, boundary: bytes, path: str):
@@ -20,18 +21,19 @@ def file_from_dictionary(dictionary: dict, boundary: bytes, path: str):
 
 def view_func(addr: str):
     def res(file_name: str):
-        if file_name == 'file_data':
+        if file_name[file_name.rfind('/') + 1:] == 'file_data':
             return ''
         try:
-            dictionary = dictionary_from_file(os.getcwd()
-                                              + '/files/' + file_name)
+            dictionary = dictionary_from_file(file_name)
         except ValueError:
             return ''
+        full_name = file_name
         file_name = dictionary["file_name"]
         size = tuple(dictionary['size'].split('x'))
-        result = href(f'{addr}/{file_name}', file_name) + ':<br>'
-        result += image('/file_data/' + file_name,
-                        file_name, size) + '<br>'
+        result = html_functions.href(f'{addr}/{file_name}',
+                                     file_name) + ':<br>'
+        result += html_functions.image('/file_data/' + file_name,
+                                       file_name, size) + '<br>'
         for key, value in dictionary.items():
             if key == 'file' or key == 'file_name':
                 continue
@@ -62,13 +64,15 @@ def dictionary_from_file(path):
 
 async def main():
     server = Server()
+    os.chdir('./demo')
 
     if 'files' not in os.listdir():
         os.mkdir(os.getcwd() + '/files')
     if 'file_data' not in os.listdir(os.getcwd() + '/files'):
         os.mkdir(os.getcwd() + '/files/file_data')
     for file in os.listdir(os.getcwd() + '/files/file_data'):
-        @server.file('/file_data/' + file)
+
+        @server.file('/file_data/' + file, const=True)
         def func(request):
             return os.getcwd() + '/files/file_data/' + file
 
@@ -76,7 +80,7 @@ async def main():
         '/file_data',
         view=view_func(f'file_data'))
     def directory(request):
-        return '/home/krebs/PythonProjects/Server/file_manager/files'
+        return '/home/krebs/PythonProjects/Server/demo/files'
 
     @server.custom_handler('/')
     def uploader(request: HttpRequest):
@@ -97,16 +101,18 @@ async def main():
                 'description': request.form.text_fields['description'].data}
 
             file = request.form.file_fields['photo']
+            file.file_name = file.file_name.replace(' ', '_')
 
-            if file.name in os.listdir():
+            if file.file_name in os.listdir():
                 raise ValueError("file already exists")
-            with open(file.name, 'wb') as f:
+            with open(file.file_name, 'wb') as f:
                 f.write(file.data)
             try:
-                image = Image.open(file.name)
+                image = Image.open(file.file_name)
                 image.verify()
             except IOError:
                 raise ValueError("file is not an image")
+            os.remove(file.file_name)
 
             if image.size is None:
                 size = b'Undefined'
@@ -124,17 +130,22 @@ async def main():
             with open(os.getcwd() + '/file_data/' + file.file_name, 'wb') as f:
                 f.write(file.data)
 
-            @server.file('/file_data/' + file.name)
-            def file_data(request: HttpRequest):
-                return os.getcwd() + '/file_data/' + file.name
+            @server.file('/file_data/' + file.file_name, const=True)
+            def file_data(request):
+                return os.getcwd() + '/file_data/' + file.file_name
+
+            os.chdir('..')
 
         return HttpResponse(
-            text_data=form('Upload an image',
-                           '/',
-                           field('name', HtmlFormFieldType.Text),
-                           field('photo', HtmlFormFieldType.File),
-                           field('description', HtmlFormFieldType.Text),
-                           field('', HtmlFormFieldType.Submit)))
+            text_data=html_functions.form('Upload an image',
+                                          '/',
+                                          field('name', field_type.Text),
+                                          field('photo', field_type.File),
+                                          field('description',
+                                                field_type.Text),
+                                          field('', field_type.Submit))
+            + 'You can see and download images '
+            + html_functions.href('/file_data', 'here'))
 
     await server.start()
 

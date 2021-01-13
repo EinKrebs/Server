@@ -9,7 +9,7 @@ def text(server, addr, host=None):
             answer_data = func(request)
             return HttpResponse(Code.OK, answer_data)
 
-        server.bind(host, addr, handler)
+        server._bind(host, addr, handler)
         return handler
 
     return decor

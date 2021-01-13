@@ -1,4 +1,4 @@
-from .response_code import Code
+from response.response_code import Code
 
 
 class HttpResponse:
@@ -17,6 +17,8 @@ class HttpResponse:
                        f'Content-Length: {len(self.text_data)}\r\n' 
                        f'\r\n' 
                        f'{self.text_data}').encode()
+            result += b'\r\n'
+            return result
         if self.file:
             with open(self.file, 'rb') as f:
                 content = f.read()

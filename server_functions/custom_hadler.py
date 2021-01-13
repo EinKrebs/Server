@@ -13,7 +13,7 @@ def custom_handler(server, addr, host=None):
     def decor(func):
         def handler(request: HttpRequest) -> HttpResponse:
             return func(request)
-        server.bind(host, addr, handler)
+        server._bind(host, addr, handler)
         return handler
 
     return decor

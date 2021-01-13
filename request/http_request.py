@@ -1,11 +1,11 @@
 from __future__ import annotations
-import typing
-import re
 
-from infrastructure.iterator_extensions import to_dictionary
-from request.request_method import Method
-from request.form_data import FormData
+import re
+import typing
+
 from request.form import Form
+from request.form_data import FormData
+from request.request_method import Method
 
 
 class HttpRequest:
@@ -15,13 +15,12 @@ class HttpRequest:
                  headers: typing.Dict[str, str] = None,
                  cookies: typing.Dict[str, str] = None,
                  form: Form = None,
-                 valid: bool = True,
-                 complete: bool = True):
+                 valid: bool = True):
         self.method = method
         self.address = address
-        self.params = params if params is not None else {}
-        self.headers = headers if headers is not None else {}
-        self.cookies = cookies if cookies is not None else {}
+        self.params = params or {}
+        self.headers = headers or {}
+        self.cookies = cookies or {}
         self.form = form
         self.valid = valid
 
@@ -40,10 +39,10 @@ class HttpRequest:
         if header_parsing is None:
             return HttpRequest.get_invalid()
         method, addr, params, version = header_parsing
-        headers = to_dictionary(map(lambda header: tuple(header.split(': ')),
-                                    text[1:]))
+        headers = dict(map(lambda header: tuple(header.split(': ')),
+                           text[1:]))
         if 'Cookie' in headers:
-            cookies = to_dictionary(map(
+            cookies = dict(map(
                 lambda cookie: tuple(cookie.split('=')),
                 headers['Cookie'].split('; ')))
             del headers['Cookie']
@@ -86,8 +85,8 @@ class HttpRequest:
                             else (header[1], None))
         if params_str is not None:
             # noinspection PyUnresolvedReferences
-            params = to_dictionary(map(lambda pair: tuple(pair.split('=')),
-                                       params_str.split('&')))
+            params = dict(map(lambda pair: tuple(pair.split('=')),
+                              params_str.split('&')))
         else:
             params = {}
         return method, addr, params, version
@@ -95,7 +94,6 @@ class HttpRequest:
     @classmethod
     def parse_form(cls, form_data: bytes, boundary: str):
         boundary = boundary.encode()
-        print(boundary + b'--\r\n', form_data[-len(boundary) - 4:])
         if not form_data.endswith(boundary + b'--\r\n'):
             raise ValueError('Incorrect form data')
         blocks = form_data[:-len(boundary) - 4].split(boundary + b'\r\n')

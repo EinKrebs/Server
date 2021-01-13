@@ -17,12 +17,13 @@ def directory_listing(server, addr, host=None, view=default_view):
                 directory_name[directory_name.rfind('/') + 1:],
                 html_functions.block(
                     'pre',
-                    '\n'.join(view(file) for file in os.listdir(directory_name))
+                    '\n'.join(view(directory_name + '/' + file)
+                              for file in os.listdir(directory_name))
                 )
             )
             return HttpResponse(Code.OK, text_data=text)
 
-        server.bind(host, addr, handler)
+        server._bind(host, addr, handler)
         return handler
 
     return decor

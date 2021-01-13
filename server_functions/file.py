@@ -3,13 +3,18 @@ from response.http_response import HttpResponse
 from response.response_code import Code
 
 
-def file(server, addr, host=None):
+def file(server, addr, host=None, const=False):
     def decor(func):
-        def handler(request: HttpRequest) -> HttpResponse:
-            filename = func(request)
-            return HttpResponse(Code.OK, file=filename)
+        if const:
+            file_name = func(None)
+        else:
+            file_name = None
 
-        server.bind(host, addr, handler)
+        def handler(request: HttpRequest) -> HttpResponse:
+            nonlocal file_name
+            return HttpResponse(Code.OK, file=file_name or func(request))
+
+        server._bind(host, addr, handler)
         return handler
 
     return decor

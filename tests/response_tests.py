@@ -1,18 +1,8 @@
 import unittest
+import random
 
 from response.http_response import HttpResponse
 from response.response_code import Code
-
-
-def test_text_data_params(data):
-    resp = HttpResponse(text_data=data)
-    return (resp.to_bytes().decode(),
-            'HTTP/1.1 200 OK\r\n'
-            'Server: python\r\n'
-            'Content-Type: text/html; charset=UTF-8\r\n'
-            f'Content-Length: {len(data.encode())}\r\n'
-            '\r\n'
-            f'{data}\r\n')
 
 
 class HttpResponseTests(unittest.TestCase):
@@ -28,8 +18,18 @@ class HttpResponseTests(unittest.TestCase):
                          'Server: python\r\n'
                          '\r\n')
 
-    def test_different_data(self):
-        self.assertEqual(*test_text_data_params(
-            'sjdfsljkhfkajshfkbasdygaskbd;aba/wdfjbaslydfgbbd'))
-        self.assertEqual(*test_text_data_params(
-            'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'))
+    def test_different_text_data(self):
+        random.seed(100)
+        for _ in range(50000):
+            self.check_text_data_params(str(random.random())
+                                        + str(random.random()))
+
+    def check_text_data_params(self, data):
+        resp = HttpResponse(text_data=data)
+        self.assertEqual(resp.to_bytes().decode(),
+                         'HTTP/1.1 200 OK\r\n'
+                         'Server: python\r\n'
+                         'Content-Type: text/html; charset=UTF-8\r\n'
+                         f'Content-Length: {len(data.encode())}\r\n'
+                         '\r\n'
+                         f'{data}\r\n')

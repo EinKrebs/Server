@@ -35,12 +35,10 @@ class FormData:
 
         raise ValueError("Incorrect data")
 
-
-if __name__ == '__main__':  # TODO: to tests
-    a = b'Content-Disposition: form-data; name="name"\r\n\r\na\r\n'
-    form_data = FormData.from_bytes(a)
-    a = b'Content-Disposition: form-data; name="a"\r\n\r\nnfnfnfka\r\n'
-    FormData.from_bytes(a)
-    a = b'Content-Disposition: form-data; name="file"; filename="a"\r\n' \
-        b'Content-Type: text/html\r\n\r\nnfnfnfka\r\n'
-    FormData.from_bytes(a)
+    def __eq__(self, other):
+        if not isinstance(other, FormData):
+            return False
+        return (self.name == other.name
+                and self.data == other.data
+                and self.file_name == other.file_name
+                and self.file_type == other.file_type)

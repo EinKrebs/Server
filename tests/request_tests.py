@@ -85,3 +85,9 @@ class HttpRequestTests(unittest.TestCase):
                b'\r\n'
         req = HttpRequest.from_bytes(data)
         self.assertEqual(req.method, Method.POST)
+
+    def test_post_file(self):
+        data = b'POST / HTTP/1.1\r\n' \
+               b'Host: server\r\n' \
+               b'Content-Type: form/urlencoded' \
+               b'\r\n'
