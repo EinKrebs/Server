@@ -27,5 +27,3 @@ def directory_listing(server, addr, host=None, view=default_view):
         return handler
 
     return decor
-
-

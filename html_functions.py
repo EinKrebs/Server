@@ -4,7 +4,7 @@ from PIL import Image
 
 
 def base_structure(title, content):
-    return ('<!DOCTYPE html>\n' 
+    return ('<!DOCTYPE html>\n'
             '<html>\n'
             '<head>'
             f'<title>{title}</title>\n'
