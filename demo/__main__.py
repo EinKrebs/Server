@@ -27,7 +27,6 @@ def view_func(addr: str):
             dictionary = dictionary_from_file(file_name)
         except ValueError:
             return ''
-        full_name = file_name
         file_name = dictionary["file_name"]
         size = tuple(dictionary['size'].split('x'))
         result = html_functions.href(f'{addr}/{file_name}',
@@ -80,7 +79,7 @@ async def main():
         '/file_data',
         view=view_func(f'file_data'))
     def directory(request):
-        return '/home/krebs/PythonProjects/Server/demo/files'
+        return os.getcwd() + '/files'
 
     @server.custom_handler('/')
     def uploader(request: HttpRequest):

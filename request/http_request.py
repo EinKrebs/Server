@@ -43,7 +43,7 @@ class HttpRequest:
                            text[1:]))
         if 'Cookie' in headers:
             cookies = dict(map(
-                lambda cookie: tuple(cookie.split('=')),
+                lambda cookie: (cookie[:cookie.find('=')], cookie[cookie.find('=') + 1:]),
                 headers['Cookie'].split('; ')))
             del headers['Cookie']
         else:
