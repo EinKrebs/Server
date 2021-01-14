@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import re
 import typing
 
@@ -29,7 +27,7 @@ class HttpRequest:
         return HttpRequest(Method.GET, '', valid=False)
 
     @classmethod
-    def from_bytes(cls, data: bytes) -> HttpRequest:
+    def from_bytes(cls, data: bytes):
         if b'\r\n\r\n' not in data:
             return HttpRequest.get_invalid()
         data, form_data = (data[:data.find(b'\r\n\r\n') + 4],
